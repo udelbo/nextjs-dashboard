@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import { UpdateCustomer, DeleteCustomer } from '@/app/ui/customers/buttons';
-import CustomerStatus from '@/app/ui/customers/status';
 import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
 import { fetchFilteredCustomers } from '@/app/lib/data';
 
