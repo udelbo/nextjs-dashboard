@@ -7,6 +7,9 @@ import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
 
+import { NextResponse } from "next/server";
+import path from "path";
+import { writeFile } from "fs/promises";
 
 const FormSchema = z.object({
     id: z.string(),
@@ -142,7 +145,7 @@ export async function createCustomer(prevState: StateCustomer, formData: FormDat
     email: formData.get('email'),
     image_url: formData.get('image_url'),
   });
-  
+
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
     return {
