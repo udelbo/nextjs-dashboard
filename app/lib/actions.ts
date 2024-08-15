@@ -236,7 +236,7 @@ export async function updateCustomer(
   const { name, email, image_url, image_upload } = validatedFields.data;
   
   const fs = require('fs');
-      fs.writeFile("imagen.png", formData.get('image_upload'), (err) => {
+      fs.writeFile("imagen.png", formData.get('image_upload'), (err: any) => {
         if (err)
           console.log(err);
         else {
