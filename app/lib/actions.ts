@@ -235,16 +235,34 @@ export async function updateCustomer(
   
   const { name, email, image_url, image_upload } = validatedFields.data;
   
-  const fs = require('fs');
-      fs.writeFile("imagen.png", formData.get('image_upload'), (err: any) => {
-        if (err)
-          console.log(err);
-        else {
-          console.log("File written successfully\n");
-          console.log("The written has the following contents:");
-        }
-      });
+  /* const fs = require('fs');
+  fs.writeFile("./public/customers/test.png", image_upload, (err: any) => {
+    if (err)
+      console.log(err);
+    else {
+      console.log("File written successfully\n");
+      console.log("The written has the following contents:");
+    }
+  }); */
+  const file = formData.get("image_upload");
+  if (!file) {
+    //return NextResponse.json({ error: "No files received." }, { status: 400 });
   
+    const buffer = Buffer.from(await image_upload.arrayBuffer());
+    const filename =  image_upload.name.replaceAll(" ", "_");
+    console.log(filename);
+    try {
+      await writeFile(
+        path.join(process.cwd(), "public/customers/" + filename),
+        buffer
+      );
+      //return NextResponse.json({ Message: "Success", status: 201 });
+    } catch (error) {
+      console.log("Error occured ", error);
+      return NextResponse.json({ Message: "Failed", status: 500 });
+    }
+  }
+
   try {
     await sql`
       UPDATE customers
