@@ -286,7 +286,7 @@ export async function updateCustomer(
   try {
     await sql`
       UPDATE customers
-      SET name = ${name}, email = ${email}, image_url = public/customers/${sanitizeAndTimestampFilename(image_upload.name)}
+      SET name = ${name}, email = ${email}, image_url = "public/customers/${sanitizeAndTimestampFilename(image_upload.name)}"
       WHERE id = ${id}
     `;//${image_url}
   } catch (error) {
