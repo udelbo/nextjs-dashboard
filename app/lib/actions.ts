@@ -259,7 +259,7 @@ export async function updateCustomer(
       //return NextResponse.json({ Message: "Success", status: 201 });
     } catch (error) {
       console.log("Error occured ", error);
-      return NextResponse.json({ Message: "Failed", status: 500 });
+      //return NextResponse.json({ Message: "Failed", status: 500 });
     }
   }
 
