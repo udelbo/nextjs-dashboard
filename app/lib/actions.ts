@@ -10,6 +10,7 @@ import { AuthError } from 'next-auth';
 import { NextResponse } from "next/server";
 import path from "path";
 import { writeFile } from "fs/promises";
+import fs from 'fs';
 
 const FormSchema = z.object({
     id: z.string(),
@@ -27,12 +28,49 @@ const FormSchema = z.object({
 
 const FormSchemaCustomer = z.object({
   id: z.string(),
-  name: z.string({    
+  name: z.string({
     required_error: "Ingrese el nombre del cliente",
     invalid_type_error: "Caracteres no válidos",
   }),
   email: z.string().email({ message: "Email no válido" }),
   image_url: z.string(),
+  image_upload: z
+  .custom<FileList>()
+  .transform((val) => {
+    if (val instanceof File) return val;
+    if (val instanceof FileList) return val[0];
+    return null;
+  })
+  .superRefine((file, ctx) => {
+    if (!(file instanceof File)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        fatal: true,
+        message: 'Not a file',
+      });
+
+      return z.NEVER;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Max file size allowed is 5MB',
+      });
+    }
+
+    if (
+      !['image/jpeg', 'image/png', 'image/webp', 'image/jpg'].includes(
+        file.type
+      )
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'File must be an image (jpeg, jpg, png, webp)',
+      });
+    }
+  })
+  .pipe(z.custom<File>()),
 });
  
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
@@ -55,6 +93,7 @@ export type StateCustomer = {
     name?: string[];
     email?: string[];
     image_url?: string[];
+    image_upload?: any[];
   };
   message?: string | null;
 };
@@ -184,6 +223,7 @@ export async function updateCustomer(
     name: formData.get('name'),
     email: formData.get('email'),
     image_url: formData.get('image_url'),
+    image_upload: formData.get('image_upload'),
   });
   
   if (!validatedFields.success) {
@@ -193,7 +233,17 @@ export async function updateCustomer(
     };
   }
   
-  const { name, email, image_url } = validatedFields.data;
+  const { name, email, image_url, image_upload } = validatedFields.data;
+  
+  const fs = require('fs');
+      fs.writeFile("imagen.png", formData.get('image_upload'), (err) => {
+        if (err)
+          console.log(err);
+        else {
+          console.log("File written successfully\n");
+          console.log("The written has the following contents:");
+        }
+      });
   
   try {
     await sql`

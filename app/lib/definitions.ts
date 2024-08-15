@@ -102,4 +102,5 @@ export type CustomerForm = {
   name: string;
   email: string;
   image_url: string;
+  image_upload: any;
 };

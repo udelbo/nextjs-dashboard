@@ -2,7 +2,7 @@
 
 import { CustomerForm } from '@/app/lib/definitions';
 import {
-  CheckIcon,
+  EnvelopeIcon,
   ClockIcon,
   CurrencyDollarIcon,
   UserCircleIcon,
@@ -21,7 +21,7 @@ export default function EditCustomerForm({
   const updateCustomerWithId = updateCustomer.bind(null, customer.id);
   const [state, dispatch] = useFormState(updateCustomerWithId, initialState);
   return (
-    <form action={dispatch}>
+    <form action={dispatch} encType="multipart/form-data" method="POST">
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
@@ -66,7 +66,7 @@ export default function EditCustomerForm({
                 aria-describedby="email-error"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
               />
-              <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+              <EnvelopeIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
             <div id="email-error" aria-live="polite" aria-atomic="true">
               {state.errors?.email &&
@@ -99,6 +99,34 @@ export default function EditCustomerForm({
             <div id="image_url-error" aria-live="polite" aria-atomic="true">
               {state.errors?.image_url &&
                 state.errors.image_url.map((error: string) => (
+                  <p className="mt-2 text-sm text-red-500" key={error}>
+                    {error}
+                  </p>
+                ))}
+            </div>
+          </div>
+        </div>
+        {/* Customer image_upload */}
+        <div className="mb-4">
+          <label htmlFor="image_upload" className="mb-2 block text-sm font-medium">
+            image_upload
+          </label>
+          <div className="relative mt-2 rounded-md">
+            <div className="relative">
+              <input
+                id="image_upload"
+                name="image_upload"
+                type="file"
+                accept="image/*"
+                placeholder="Seleccione una imagen"
+                aria-describedby="image_upload-error"
+                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              />
+              <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+            </div>
+            <div id="image_upload-error" aria-live="polite" aria-atomic="true">
+              {state.errors?.image_upload &&
+                state.errors.image_upload.map((error: string) => (
                   <p className="mt-2 text-sm text-red-500" key={error}>
                     {error}
                   </p>
