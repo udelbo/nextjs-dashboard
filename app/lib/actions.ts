@@ -273,10 +273,10 @@ export async function updateCustomer(
   console.log(filename);
   try {
     await writeFile(
-      path.join(process.cwd(), "public/customers/" + filename),
+      path.join(process.cwd(), "/public/customers/" + filename),
       buffer
     );
-    //return NextResponse.json({ Message: "Success", status: 201 });
+    console.log("archivo subido correctamente", filename);
   } catch (error) {
     console.log("Error occured ", error);
     return { message: 'Error occured al grabar archivo.' };
@@ -285,10 +285,11 @@ export async function updateCustomer(
   try {
     await sql`
       UPDATE customers
-      SET name = ${name}, email = ${email}, image_url = "public/customers/${filename}"
+      SET name = ${name}, email = ${email}, image_url = ${'/customers/'+filename} 
       WHERE id = ${id}
     `;//${image_url}
   } catch (error) {
+    console.log("Error occured ", filename);
     return { message: 'Database Error: Failed to Update Customer.' };
   }
   
