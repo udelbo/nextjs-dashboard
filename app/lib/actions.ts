@@ -12,6 +12,25 @@ import path from "path";
 import { writeFile } from "fs/promises";
 import fs from 'fs';
 
+function sanitizeAndTimestampFilename(originalFilename: string): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+  const timestamp = `${year}${month}${day}_${hours}${minutes}${seconds}_${milliseconds}`;
+
+  const extension = path.extname(originalFilename);
+  let nameWithoutExtension = path.basename(originalFilename, extension);
+
+  nameWithoutExtension = nameWithoutExtension.replace(/[^a-zA-Z0-9-_]/g, '_');
+
+  return `${nameWithoutExtension}_${timestamp}${extension}`;
+}
+
 const FormSchema = z.object({
     id: z.string(),
     customerId: z.string({
@@ -249,7 +268,8 @@ export async function updateCustomer(
     //return NextResponse.json({ error: "No files received." }, { status: 400 });
   
     const buffer = Buffer.from(await image_upload.arrayBuffer());
-    const filename =  image_upload.name.replaceAll(" ", "_");
+    //const filename =  image_upload.name.replaceAll(" ", "_");
+    const filename = sanitizeAndTimestampFilename(image_upload.name);
     console.log(filename);
     try {
       await writeFile(
@@ -266,9 +286,9 @@ export async function updateCustomer(
   try {
     await sql`
       UPDATE customers
-      SET name = ${name}, email = ${email}, image_url = ${image_url}
+      SET name = ${name}, email = ${email}, image_url = public/customers/${sanitizeAndTimestampFilename(image_upload.name)}
       WHERE id = ${id}
-    `;
+    `;//${image_url}
   } catch (error) {
     return { message: 'Database Error: Failed to Update Customer.' };
   }
