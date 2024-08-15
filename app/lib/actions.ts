@@ -265,28 +265,27 @@ export async function updateCustomer(
   }); */
   const file = formData.get("image_upload");
   if (!file) {
-    //return NextResponse.json({ error: "No files received." }, { status: 400 });
-  
-    const buffer = Buffer.from(await image_upload.arrayBuffer());
-    //const filename =  image_upload.name.replaceAll(" ", "_");
-    const filename = sanitizeAndTimestampFilename(image_upload.name);
-    console.log(filename);
-    try {
-      await writeFile(
-        path.join(process.cwd(), "public/customers/" + filename),
-        buffer
-      );
-      //return NextResponse.json({ Message: "Success", status: 201 });
-    } catch (error) {
-      console.log("Error occured ", error);
-      //return NextResponse.json({ Message: "Failed", status: 500 });
-    }
+    return { message: 'No files received.' };
+  }
+  const buffer = Buffer.from(await image_upload.arrayBuffer());
+  //const filename =  image_upload.name.replaceAll(" ", "_");
+  const filename = sanitizeAndTimestampFilename(image_upload.name);
+  console.log(filename);
+  try {
+    await writeFile(
+      path.join(process.cwd(), "public/customers/" + filename),
+      buffer
+    );
+    //return NextResponse.json({ Message: "Success", status: 201 });
+  } catch (error) {
+    console.log("Error occured ", error);
+    return { message: 'Error occured al grabar archivo.' };
   }
 
   try {
     await sql`
       UPDATE customers
-      SET name = ${name}, email = ${email}, image_url = "public/customers/${sanitizeAndTimestampFilename(image_upload.name)}"
+      SET name = ${name}, email = ${email}, image_url = "public/customers/${filename}"
       WHERE id = ${id}
     `;//${image_url}
   } catch (error) {
